@@ -1,0 +1,81 @@
+a.
+select Customer.Name, sum(Price) from Customer, Purchase, Book
+where Customer.CustomerId = Purchase.CustomerId
+and Purchase.Isbn = Book.Isbn
+group by Customer.CustomerId
+
+b.
+select Customer.Name, Customer.Email from Customer, Purchase, Book
+where Customer.CustomerId = Purchase.CustomerId
+and Purchase.Isbn = Book.Isbn
+group by Customer.CustomerId
+having sum(Book.Price) > (select avg(spent) from (select sum(Book.Price) as spent from Customer, Purchase, Book
+	where Customer.CustomerId = Purchase.CustomerId
+	and Purchase.Isbn = Book.Isbn
+	group by Customer.CustomerId))
+	
+c.
+select Book.Title, Count(*) as Number_Sold from Book, Purchase
+where Book.Isbn = Purchase.Isbn
+group by Book.Isbn
+order by Number_Sold desc
+
+d.
+select Book.Title, (Count(*)*Book.Price) as Income from Book, Purchase
+where Book.Isbn = Purchase.Isbn
+group by Book.Isbn
+order by Income desc
+
+e.
+select Author.Name from Author
+where Author.AuthorId =(select AuthorId from (
+	select Author.AuthorId, Count(*) as Number_Sold from Book, Purchase, Author, Wrote
+		where Book.Isbn = Purchase.Isbn
+		and Book.Isbn = Wrote.Isbn
+		and Wrote.AuthorId = Author.AuthorId
+		group by Author.AuthorId)
+		order by Number_Sold desc
+		limit 1)
+		
+f.
+select Name, sum(Income) as Income from (
+	select Author.AuthorId, Book.Title, Author.Name, (count(*)*Book.Price) as Income from Book, Purchase, Wrote, Author
+	where Book.Isbn = Purchase.Isbn
+	and Wrote.Isbn = Book.Isbn
+	and Wrote.AuthorId = Author.AuthorId
+	group by Author.AuthorId, Book.Isbn)
+group by AuthorId
+order by Income desc
+limit 1
+
+g.
+select Customer.* from Customer, Purchase, Wrote, Book
+where Purchase.CustomerId = Customer.CustomerId
+and Purchase.Isbn = Book.Isbn
+and Wrote.Isbn = Book.Isbn
+and Wrote.AuthorId = (select AuthorId from (
+		select AuthorId, Name, sum(Income) as Income from (
+			select Author.AuthorId, Book.Title, Author.Name, (count(*)*Book.Price) as Income from Book, Purchase, Wrote, Author
+			where Book.Isbn = Purchase.Isbn
+			and Wrote.Isbn = Book.Isbn
+			and Wrote.AuthorId = Author.AuthorId
+			group by Author.AuthorId, Book.Isbn)
+		group by AuthorId
+		order by Income desc
+		limit 1)) 
+		
+h.
+select Author.Name from Author,Book,Purchase,Wrote
+where Author.AuthorId = Wrote.AuthorId
+and Book.Isbn = Wrote.Isbn
+and Purchase.Isbn = Book.Isbn
+and Purchase.CustomerId = (
+
+select Customer.CustomerId from Customer, Purchase, Book
+where Customer.CustomerId = Purchase.CustomerId
+and Purchase.Isbn = Book.Isbn
+group by Customer.CustomerId
+having sum(Book.Price) > (select avg(spent) from (select sum(Book.Price) as spent from Customer, Purchase, Book
+	where Customer.CustomerId = Purchase.CustomerId
+	and Purchase.Isbn = Book.Isbn
+	group by Customer.CustomerId)))
