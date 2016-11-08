@@ -1,0 +1,26 @@
+Give the number of books purchased using a particular type of credit card (i.e. Mastercard, Visa)
+
+
+    type𝓕COUNT(cc)(πcc(PAYMENT * (PURCHASES *  CUSTOMER_PAY_INFO)))
+
+    SELECT COUNT(‘Mastercard’) FROM (SELECT * FROM payment pay JOIN 
+(SELECT * FROM purchases pur JOIN customer_pay_info cpi ON pur.cus_id=cpi.cus_id) t ON pay.cc=t.cc) 
+GROUP BY type
+
+
+Give the price of all books that are used as textbooks for all courses at OSU (unid = 6025)
+
+
+    πprice(σunid=6025(COURSE ⋈required_book=isbn BOOK))
+
+    SELECT price FROM course c JOIN book b ON c.required_book=c.isbn WHERE c.unid=6025
+
+
+Get the emails of all customers whose credit card is going to expire before the end of 2016.
+
+
+    πemail(σexp_date < ‘2016-12-31’’(PAYMENT * (CUSTOMER_PAY_INFO * CUSTOMER)))
+    
+    SELECT email FROM (SELECT * FROM payment pay JOIN 
+(SELECT * FROM customer c JOIN customer_pay_info cpi ON c.cus_id=cpi.cus_id) t ON pay.cc=t.cc) 
+WHERE pay.exp_date<'2016-12-31'
