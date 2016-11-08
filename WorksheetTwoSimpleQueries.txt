@@ -1,0 +1,51 @@
+a) Find all titles of books by Pratchett that cost less than $10
+SELECT Title, Name
+FROM Book  
+JOIN Wrote
+ON Book.Isbn = Wrote.Isbn
+JOIN Author
+ON Wrote.AuthorId = Author.AuthorId
+WHERE 
+Price < 10 AND Author.Name = 'Terry Pratchett';
+
+b) Find all titles and dates of purchase made by a single customer
+SELECT Title, PurchaseDate
+FROM Customer 
+JOIN Purchase
+ON Customer.CustomerId = Purchase.CustomerId
+JOIN Book 
+ON Purchase.Isbn = Book.Isbn
+Where 
+Customer.CustomerId = 1;
+
+c) Find the title and ISBNs for all books with less than 5 in stock
+SELECT Title, Isbn 
+FROM Book
+WHERE
+Quantity < 5;
+
+d) Give all of the customers who bought a book from Pratchett and the titles of the books they Purchased
+SELECT Customer.CustomerId, Book.Title 
+FROM Customer
+JOIN Purchase
+ON Customer.CustomerId = Purchase.CustomerId
+JOIN Book
+ON Purchase.Isbn = Book.Isbn
+JOIN Wrote
+ON Book.Isbn = Wrote.Isbn
+JOIN Author
+ON
+Wrote.AuthorId = Author.AuthorId
+Where Author.Name = 'Terry Pratchett';
+
+e) Find the total number of books purchased by a single customer (you choose how to designate the customer)
+SELECT Count(Isbn)
+FROM Purchase 
+Where CustomerId = 4;
+
+f) Find the customer who has purchased the most books and the total number of books they have purchased
+SELECT CustomerId, Count(Isbn)
+FROM Purchase
+GROUP BY CustomerId
+ORDER BY Count(Isbn) desc
+Limit 1;
