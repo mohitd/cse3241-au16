@@ -40,17 +40,17 @@ with open(file, 'r') as f:
 	for row in reader:
 		if row[0]:
 			book = Book()
-			book.isbn = row[0]
-			book.title = row[1]
-			book.authors.append(row[2])
-			book.publisher = row[3]
-			book.year = row[4]
-			book.price = row[5]
-			book.category = row[6]
+			book.isbn = row[0].strip()
+			book.title = row[1].strip()
+			book.authors.append(row[2].strip())
+			book.publisher = row[3].strip()
+			book.year = row[4].strip()
+			book.price = row[5].strip()
+			book.category = row[6].strip()
 			curBook = book
 			books.append(curBook)
 		else:
-			curBook.authors.append(row[2])
+			curBook.authors.append(row[2].strip())
 
 # Create publishers
 # CREATE TABLE Publisher(PublisherId INTEGER PRIMARY KEY, Name TEXT, Address TEXT, Phone TEXT);
